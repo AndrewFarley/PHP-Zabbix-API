@@ -194,7 +194,7 @@ class ZabbixAPI {
     private static function __init() {
         if (self::$instance === null) {
             self::$instance = new ZabbixAPI();
-    }
+    }  }
     
     /**
      * Recursive function to get the first non array element of a multidimensional array
