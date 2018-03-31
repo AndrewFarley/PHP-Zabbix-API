@@ -1,17 +1,19 @@
 <?php
 /**
  * Zabbix PHP API (via the JSON-RPC Zabbix API)
- * @version 1.0 Public Release - December 23, 2009
+ * @version 1.1 Public Release - March 31, 2018
  * @author Andrew Farley @ http://andrewfarley.com
  * @see http://andrewfarley.com/zabbix_php_api
+ *
+ * Updated by some guy on the internet.
  *
  * Based on the Zabbix 1.8 API - The official docs are still slim...
  * @see http://www.zabbix.com/documentation/1.8/api
  *
- * @requires PHP 5.2 or greater
+ * @requires PHP 5.6 or greater
  * @requires PHP JSON functions (json_encode/json_decode)
  * @requires PHP CURL
- * @requires Zabbix to be 1.7.2 or greater (so it has the API), preferably 1.8
+ * @requires Zabbix to be 1.8 or greater
  *
  * @copyright 2009 Andrew Farley - http://andrewfarley.com
  * @license Wishlist-ware
@@ -23,6 +25,9 @@
  * and it helps benefit you or your company (and you can afford it) buy me an item
  * from one of my wish lists (on my website) or if we cross paths buy me caffeine
  * in some form and we'll call it even!
+ *
+ *
+ * Some guy on the internet has had enough caffeine already!
  * --------------------------------------------------------------------------------
  *
  * Design Notes:
@@ -53,6 +58,7 @@
  *      NOTE: If any methods return PHP === FALSE, then you can use 
  *      ZabbixAPI::getLastError() to check what the problem was!  :)
  */
+
 class ZabbixAPI {
     /**
      * Private constants, not intended to be changed or edited
