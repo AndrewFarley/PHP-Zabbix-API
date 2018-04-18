@@ -1,17 +1,19 @@
 <?php
 /**
  * Zabbix PHP API (via the JSON-RPC Zabbix API)
- * @version 1.0 Public Release - December 23, 2009
+ * @version 1.1 Public Release - March 31, 2018
  * @author Andrew Farley @ http://andrewfarley.com
  * @see http://andrewfarley.com/zabbix_php_api
+ * Updated by some guy on the internet who really needed it work.
+ *
  *
  * Based on the Zabbix 1.8 API - The official docs are still slim...
  * @see http://www.zabbix.com/documentation/1.8/api
  *
- * @requires PHP 5.2 or greater
+ * @requires PHP 5.3 or greater
  * @requires PHP JSON functions (json_encode/json_decode)
  * @requires PHP CURL
- * @requires Zabbix to be 1.7.2 or greater (so it has the API), preferably 1.8
+ * @requires Zabbix to be 1.8 or greater (so it has the API), preferably 3.4 cause it's been nearly a decade
  *
  * @copyright 2009 Andrew Farley - http://andrewfarley.com
  * @license Wishlist-ware
@@ -23,6 +25,8 @@
  * and it helps benefit you or your company (and you can afford it) buy me an item
  * from one of my wish lists (on my website) or if we cross paths buy me caffeine
  * in some form and we'll call it even!
+ *
+ * Some guy on the internet updated it and has probaby had enough caffiene already, thanks.
  * --------------------------------------------------------------------------------
  *
  * Design Notes:
@@ -188,9 +192,9 @@ class ZabbixAPI {
      * Private init function, which is called to ensure our instance is initialized
      */
     private static function __init() {
-        if (get_class(self::$instance) != "ZabbixAPI")
+        if (self::$instance === null) {
             self::$instance = new ZabbixAPI();
-    }
+    }  }
     
     /**
      * Recursive function to get the first non array element of a multidimensional array
@@ -210,12 +214,17 @@ class ZabbixAPI {
     private static function __buildJSONRequest($method, $params = array()) {
         // This is our default JSON array
         $request = array(
-            'auth' => self::$instance->auth_hash,
             'method' => $method,
             'id' => 1,  // NOTE: this needs to be fixed I think?
             'params' => ( is_array($params) ? $params : array() ),
             'jsonrpc' => "2.0"
         );
+        
+       // apiinfo method cannot include auth
+       if  ( strpos($method, 'apiinfo') === false )   {
+             $request['auth'] = self::$instance->auth_hash;
+       }
+       
         // Return our request, in JSON format
         return json_encode($request);
     }
@@ -231,7 +240,7 @@ class ZabbixAPI {
         self::$instance->last_error = false;
         
         // Make sure we're logged in, or trying to login...
-        if ($this->auth_hash == NULL && $method != 'user.authenticate')
+        if ($this->auth_hash == NULL && $method != 'user.login')
             return false;  // If we're not logged in, no wasting our time here
         
         // Try to retrieve this...
@@ -265,7 +274,7 @@ class ZabbixAPI {
      */
     private function __login() {
         // Try to login to our API
-        $data = $this->__callAPI('user.authenticate', array( 'password' => $this->password, 'user' => $this->username ));
+        $data = $this->__callAPI('user.login', array( 'password' => $this->password, 'user' => $this->username ));
         
         if ($this->debug)
             echo "__login() Got response from API: ($data)\n";
